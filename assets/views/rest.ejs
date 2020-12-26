@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+    <% const title = `${editable ? mode === 'create' ? 'Creating' : 'Modifying' : 'Viewing'} Restaurants: ${rest.name}`%>
+    <!-- author="Eric Lam" -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""/>
+      <!-- Make sure you put this AFTER Leaflet's CSS -->
+      <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin=""></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <title> <%= title %> </title>
+</head>
+<body>
+    <% const required = () => editable ? 'required' : '' %>
+    <nav class="navbar navbar-dark bg-success mb-5">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <%= title %>
+            </span>
+        </div>
+    </nav>
+    <div class="container">
+        <% if ( success !== undefined ) { %>
+            <div class="alert alert-success" role="alert">
+                Successfully <%= success %> resturant <%= rest.name %>
+            </div>
+        <% } %>
+        <div class="card">
+            <div class="card-body">
+                <% if ( (rest.photo || "").length > 0) { %>
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#image" role="button">
+                        Show Restaurant Image
+                    </a>
+                    <div class="collapse" id="image">
+                        <img src="data:<%= rest.photo_mimetype%>;base64, <%= rest.photo %>"><br>
+                    </div>
+                <% } %>
+                <% const coord = rest.address.coord %>
+                <% if ( coord.length == 2 ) { %>
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#gmap" role="button">
+                        Show Google Map
+                    </a>
+                    <div class="collapse" id="gmap">
+                        <iframe src="/gmap?lat=<%= coord[0] %>&lon=<%= coord[1] %>&title=<%= rest.name %>" width="900" height="580"></iframe>
+                        <a href="/gmap?lat=<%= coord[0] %>&lon=<%= coord[1] %>&title=<%= rest.name %>" target="_blank">here for full page</a>
+                    </div>
+                <% } %>
+                <% let action = mode === 'create' ? '/api/restaurant' : '/api/restaurant/'.concat(rest._id) %>
+                <form method="POST" action="<%= action %>" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="<%= rest.name %>">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="mb-3">
+                                <label for="borough" class="form-label">Borough</label>
+                                <input type="text" class="form-control" id="borough" name="borough" value="<%= rest.borough %>">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="mb-3">
+                                <label for="cuisine" class="form-label">Cuisine</label>
+                                <input type="text" class="form-control" id="cuisine" name="cuisine" value="<%= rest.cuisine %>">
+                            </div>
+                        </div>
+                    </div>
+                    <% const address = rest.address %>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="mb-3">
+                                <label for="street" class="form-label">Street</label>
+                                <input type="text" class="form-control" id="street" name="street" value="<%= address.street %>">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="mb-3">
+                                <label for="building" class="form-label">Building</label>
+                                <input type="text" class="form-control" id="building" name="building" value="<%= address.building %>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="mb-3">
+                                <label for="zipcode" class="form-label">Zipcode</label>
+                                <input type="text" class="form-control" id="zipcode" name="zipcode" value="<%= address.zipcode %>">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <label for="coord" class="form-label">Coord</label>
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control" step="any" placeholder="X" id="coord_x" name="coord_x" value="<%= address.coord[0] %>">
+                                <span class="input-group-text">, </span>
+                                <input type="number" class="form-control" step="any" placeholder="Y" id="coord_y" name="coord_y" value="<%= address.coord[1] %>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="photo" class="form-label">Photo</label>
+                        <input class="form-control" type="file" id="photo" name="photo" accept=".jpg, .png">
+                      </div>
+                    Grades:
+                    <ul class="list-group mb-3">
+                        <% for (const rate of rest.grades) { %>
+                            <li class="list-group-item"><%= rate.user %>: <%= rate.score %>/10</li>
+                        <% } %>
+                    </ul>
+                    <button type="submit" class="btn btn-success" id="submit">Save</button>
+                    <a class="btn btn-info" href="/rate/<%= rest._id %>" >Rate</a>
+                    <button class="btn btn-warning" disabled id="edit-btn" formaction="/modify/<%= rest._id %>" formmethod="GET">Edit</button>
+                    <button class="btn btn-danger" disabled id="delete-btn" formaction="/api/restaurant/delete/<%= rest._id %>" formmethod="GET">Delete</button>
+                    <a class="btn btn-primary" href="/" style="float: right;">Back</a>
+                </form>
+            </div> 
+        </div>
+    </div>
+
+    <script>
+        if (! <%= editable %> ) {
+            $('.form-control').attr('disabled', 'disabled')
+            $('button#submit').attr('disabled', 'disabled')
+            if (<%= owner %>) {
+                console.log('you are the restaurant owner')
+                let btn = $('button#edit-btn')
+                btn.removeAttr('disabled')
+                btn = $('button#delete-btn')
+                btn.removeAttr('disabled')
+            }
+        }
+    </script>
+</body>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+    <!-- author="Eric Lam" -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <title>Rate Restaurant: <%= rest.name %></title>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-success mb-5">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                Rate Restaurant: <%= rest.name %>
+            </span>
+            <a class="btn btn-outline-info" href="/api/user/logout">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="/api/restaurant/rate/<%= rest._id %>">
+                    <label for="score" class="form-label">You rate <%= rest.name %>: <span id="score-txt">5</span>/10</label>
+                    <input type="range" class="form-range" id="score" name="score" max="10" min="1" value="5">
+                    <button type="submit" class="btn btn-primary">Rate</button>
+                    <a class="btn btn-danger" href="/rest/<%= rest._id %>">Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('input#score').on('input', e => {
+            $('span#score-txt')[0].innerText = e.target.value
+        })
+    </script>
+</body>

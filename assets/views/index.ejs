@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+    <!-- author="Eric Lam" -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <title>List of Restaurants</title>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-success mb-5">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                Restaurants Recommendations
+            </span>
+            <a class="btn btn-outline-info" href="/api/user/logout">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <span style="float: right;">Welcome back, <%= username %></span>
+        <h3>Restaurants List (Total: <%= restaurants.total %>)</h3>
+        <ul class="list-group mb-3">
+            <% for (const rest of restaurants.list) { %>
+                <li class="list-group-item">
+                    <a href="/rest/<%= rest._id %>"><%= rest.name %></a>
+                </li>
+            <% } %>
+        </ul>
+        <% if ( maxPage > 1 ){ %>
+            <nav>
+                <ul class="pagination">
+                  <li class="page-item"><a class="page-link" href="/?page=<%= Math.max(page - 1, 1)%>">Previous</a></li>
+                  <% for (let i = Math.max(1, page - 2); i < page; i++) { %>
+                    <li class="page-item"><a class="page-link" href="/?page=<%= i %>"><%= i %></a></li>
+                  <% } %>
+                  <li class="page-item"><a class="page-link" href="/?page=<%= page %>"><%= page %></a></li>
+                  <% for (let i = page+1; i <= Math.min(page + 2, maxPage); i++) { %>
+                    <li class="page-item"><a class="page-link" href="/?page=<%= i %>"><%= i %></a></li>
+                  <% } %>
+                  <li class="page-item"><a class="page-link" href="/?page=<%= Math.min(page + 1, maxPage)%>">Next</a></li>
+                </ul>
+            </nav>
+        <% } %>
+        <a class="btn btn-outline-primary" type="button" href="/rest">Create Restaurant</a>
+    </div>
+</body>

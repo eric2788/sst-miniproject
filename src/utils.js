@@ -18,7 +18,7 @@ function throwError(message, code = 400, redirect = '/error'){
 }
 
 module.exports = {
-    hash256: (password) => {
+    hashMD5: (password) => {
         const h = crypto.createHash('md5')
         h.update(password)
         return h.digest('hex')

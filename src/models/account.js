@@ -5,7 +5,7 @@ async function login(username, password){
     return await db.connect({
         collection: 'project_users',
         run: async (users) => {
-            password = utils.hash256(password)
+            password = utils.hashMD5(password)
             const result = await users.findOne({
                 $and: [
                     { username },
@@ -33,7 +33,7 @@ async function register(username, password){
                 "username": username
             }, { "_id": 1})
             if (find !== null) throw utils.throwError('username already registered', 400, '/register')
-            password = utils.hash256(password)
+            password = utils.hashMD5(password)
             await users.insertOne({
                 username, password
             })
